@@ -109,22 +109,35 @@ int device_register(struct device *dev)
 }
 */
 
+/**
+ * uio_register_device - register a new userspace IO device
+ * @owner:	module that creates the new device
+ * @parent:	parent device
+ * @info:	UIO device capabilities
+ *
+ * returns zero on success or a negative error code.
+ */
 static int __init uio_init(void)
 {
+	int retval;
 	dev = kzalloc(sizeof(struct device), GFP_KERNEL);
 	dev_set_name(dev, "uio_dev");
 	dev->release = uio_release;
-	device_register(dev);
+	retval = device_register(dev);
+	if (retval < 0) {
+		pr_info("Device registeration Failed\n");
+		goto exit;
+	}
 
 	info = kzalloc(sizeof(struct uio_info), GFP_KERNEL);
 
 	/* irq information */
-	info->name = "my_uio_device";
+	info->name = "uio_device";
 	info->version = "0.1";
 	info->irq = irq;
 	info->irq_flags = IRQF_SHARED;
 	info->handler = uio_handler;
-	/*Uio Device registarion*/
+	/*Uio Device registeration*/
 	if (uio_register_device(dev, info) < 0) {
 		device_unregister(dev);
 		kfree(dev);
@@ -134,6 +147,8 @@ static int __init uio_init(void)
 	}
 	pr_info("Registered UIO handler for IRQ=%d\n", irq);
 	return 0;
+exit:
+	return retval;
 }
 
 static void __exit uio_exit(void)
