@@ -39,8 +39,8 @@ int main()
 
 		getchar();
 		devmem_start =
-		    (char *)mmap((void *)0, 4096, PROT_READ | PROT_WRITE,
-				 MAP_PRIVATE, fd, 0);
+		    (char *)mmap(NULL,4096, PROT_READ | PROT_WRITE |PROT_EXEC,
+				 MAP_SHARED, fd, 0);
 		if (devmem_start == MAP_FAILED)
 			 handle_error("mmap");
 

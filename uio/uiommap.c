@@ -173,6 +173,9 @@ static int __init uio_init(void)
 	info->irq_flags = IRQF_SHARED;
 	info->handler = uio_handler;
 	info->mmap = uio_mmap; 
+	info->mem[0].addr = 0x000A0000;
+	info->mem[0].size = 0x00020000;
+	info->mem[0].memtype = UIO_MEM_PHYS;
 	/*Uio Device registeration*/
 	if (uio_register_device(dev, info) < 0) {
 		device_unregister(dev);
