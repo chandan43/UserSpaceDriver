@@ -11,6 +11,7 @@ Use case   : modprobe uio
 #include <linux/device.h>
 #include <linux/uio_driver.h>
 #include <linux/mm.h>
+#include <linux/sched.h>
 
 #define FB_BASE         0x000A0000
 #define FB_SIZE         0x00020000
@@ -82,6 +83,16 @@ static void uio_release(struct device *dev)
 }
 
 
+/**
+ * remap_pfn_range - remap kernel memory to userspace
+ * @vma: user vma to map to
+ * @addr: target user address to start at
+ * @pfn: physical address of kernel memory
+ * @size: size of map area
+ * @prot: page protection flags for this mapping
+ *
+ *  Note: this is only safe if the mm semaphore is held when called.
+ */
 static int uio_mmap(struct uio_info *info, struct vm_area_struct *vma)
 {
         unsigned long region_origin = vma->vm_pgoff * PAGE_SIZE;
